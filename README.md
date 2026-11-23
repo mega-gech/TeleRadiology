@@ -31,7 +31,7 @@ Instead of allowing hospitals to independently search for and hire radiologists,
 
 ## Key Features
 
-### 1. Authentication and User Management
+### 1. Authentication and User Managementd
 - Secure user authentication.
 - Role-based access control.
 - User account management.
