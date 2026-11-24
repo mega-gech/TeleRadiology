@@ -1,26 +1,60 @@
 @import "tailwindcss";
 
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand colors */
+  --primary: #197c68;
+  --primary-dark: #123b35;
+
+  /* Light theme */
+  --background: #f7faf9;
+  --foreground: #172b27;
+
+  --surface: #ffffff;
+  --muted: #eef4f1;
+  --muted-foreground: #64756f;
+
+  --border: #dce7e2;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --background: #101c27;
+  --foreground: #f1f5f9;
+
+  --surface: #192936;
+  --muted: #223541;
+  --muted-foreground: #a8b8c3;
+
+  --border: #304252;
 }
 
 @theme inline {
+  /* Colors */
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  --color-surface: var(--surface);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+
+  /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  min-height: 100%;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
