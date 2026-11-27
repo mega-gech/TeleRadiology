@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -8,11 +9,51 @@ import { Button } from "@/components/ui/button";
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
 
-    console.log({ email, password });
+    setMessage("");
+    setIsError(false);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setIsError(true);
+        setMessage(result.message || "Login failed.");
+        return;
+      }
+
+      setMessage("Login successful. Your session is now active.");
+
+      setPassword("");
+
+    } catch {
+      setIsError(true);
+      setMessage(
+        "Unable to connect to the server. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -28,6 +69,7 @@ export function LoginForm() {
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           placeholder="you@example.com"
+          autoComplete="username"
           required
           className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primary"
         />
@@ -50,14 +92,27 @@ export function LoginForm() {
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           placeholder="Enter your password"
+          autoComplete="current-password"
           required
           className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primary"
         />
       </div>
 
-      <Button type="submit">
-        Sign In
+      <Button type="submit" disabled={isLoading}>
+        {isLoading ? "Signing in..." : "Sign In"}
       </Button>
+
+      {message && (
+        <p
+          role="status"
+          aria-live="polite"
+          className={`text-center text-sm ${
+            isError ? "text-red-500" : "text-muted-foreground"
+          }`}
+        >
+          {message}
+        </p>
+      )}
 
       <p className="text-center text-sm text-muted-foreground">
         New healthcare facility?{" "}
