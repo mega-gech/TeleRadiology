@@ -8,13 +8,54 @@ import { Button } from "@/components/ui/button";
 
 export function RegisterForm() {
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
 
-    setMessage(
-      "Registration form is ready. Database registration has not been connected yet."
-    );
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    const data = Object.fromEntries(formData.entries());
+
+    setMessage("");
+    setIsError(false);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setIsError(true);
+        setMessage(result.message || "Registration failed.");
+        return;
+      }
+
+      setMessage(
+        "Registration successful! You can now sign in."
+      );
+
+      form.reset();
+
+    } catch {
+      setIsError(true);
+      setMessage(
+        "Unable to connect to the server. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   const inputStyles =
@@ -127,12 +168,18 @@ export function RegisterForm() {
         />
       </div>
 
-      <Button type="submit">
-        Register Facility
+      <Button type="submit" disabled={isLoading}>
+        {isLoading ? "Registering..." : "Register Facility"}
       </Button>
 
       {message && (
-        <p role="status" className="text-center text-sm text-muted-foreground">
+        <p
+          role="status"
+          aria-live="polite"
+          className={`text-center text-sm ${
+            isError ? "text-red-500" : "text-muted-foreground"
+          }`}
+        >
           {message}
         </p>
       )}
